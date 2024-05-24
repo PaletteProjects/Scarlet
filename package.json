@@ -1,0 +1,21 @@
+{
+  "private": true,
+  "name": "scarlet",
+  "version": "1.0.0-infdev",
+  "license": "Apache-2.0",
+  "type": "module",
+  "scripts": {
+    "build": "tsx build"
+  },
+  "dependencies": {
+    "anguishjs": "link:../anguish"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.30",
+    "@types/uglify-js": "^3.17.5",
+    "esbuild": "^0.20.2",
+    "tsx": "^4.11.0",
+    "uglify-js": "^3.17.4",
+    "unplugin-auto-import": "^0.17.6"
+  }
+}

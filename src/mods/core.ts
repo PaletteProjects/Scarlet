@@ -8,13 +8,15 @@
 import { Author, define, devs, html, Mod, query, re, replace } from "scarlet";
 
 // TODO: image needs a ?rv= to avoid cache, which seems to be very, very long
-const ModAuthor = (author: Author) =>
-  html`<img
-    class="avatar"
-    width="48"
-    alt="${author.name}"
-    :src="${author.id ? `/user-content/avatars/${author.id}.jpg` : "/res/avatar.png"}"
-  >`
+const ModAuthor = (author: Author) => {
+  const src = author.id ? `/user-content/avatars/${author.id}.jpg` : "/res/avatar.png";
+
+  return html`<img
+    class="avatar" width="48"
+    :alt="${author.name}" :title="${author.name}" :src="${src}"
+    @click="${() => author.id && core.openProfile({ userID: author.id })}"
+  >`;
+};
 
 const ModSettings = (mod: Mod) =>
   html`<div class="scroller_block">
@@ -70,6 +72,7 @@ const core = define({
     replace(re`loadProvider:async function(){`, "$&return;"),
 
     replace(re`function \(\i\)(\i,\i){(\i[\i].onexit||`, "$self.switchMenu=$1;$&"),
+    replace(re`function \(\i\)(\i){\.\{1,96},\i.classList.add("tetra_modal")`, "$self.openProfile=$1;$&"),
   ],
   start() {
     query("#config_account")?.before(SettingsButton());
@@ -77,6 +80,7 @@ const core = define({
   },
 
   switchMenu(_target: string) {},
+  openProfile(_user: { userID: string } | { username: string }) {},
 });
 
 export default core;

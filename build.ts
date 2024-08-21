@@ -2,7 +2,6 @@ import { execSync } from "child_process";
 import { build, BuildOptions, context } from "esbuild";
 import { readFile, writeFile } from "fs/promises";
 import { minify, MinifyOptions } from "uglify-js";
-import autoImport from "unplugin-auto-import/esbuild";
 
 const watch = process.argv.includes("--watch") || process.argv.includes("-w");
 
@@ -25,18 +24,8 @@ const options: BuildOptions = {
   define: {
     VERSION: JSON.stringify(version),
   },
+  logLevel: "info",
   plugins: [
-    autoImport({
-      dts: true,
-      imports: [{
-        from: "loader",
-        imports: ["after", "before", "append", "prepend", "query", "html", "patch", "re", "define"],
-      }, {
-        from: "loader",
-        imports: ["Mod", "Patch"],
-        type: true,
-      }],
-    }),
     {
       name: "uglify",
       setup(build) {

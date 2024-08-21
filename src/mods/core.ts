@@ -5,53 +5,78 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-const ModSettings = (mod: Mod) =>
-  html`<div class="scroller_block" x-data="${mod}">
-    <h1
-      data-hover="tap" data-hit="click"
-      class="checkbox rg_target_pri" :class="{ checked: true, disabled: true }"
-      @click="" x-text="name.toUpperCase()"
-    ></h1>
+import { Author, define, devs, html, Mod, query, re, replace } from "scarlet";
 
-    nya
+// TODO: image needs a ?rv= to avoid cache, which seems to be very, very long
+const ModAuthor = (author: Author) =>
+  html`<img
+    class="avatar"
+    width="48"
+    alt="${author.name}"
+    :src="${author.id ? `/user-content/avatars/${author.id}.jpg` : "/res/avatar.png"}"
+  >`
+
+const ModSettings = (mod: Mod) =>
+  html`<div class="scroller_block">
+    <h1
+      class="checkbox rg_target_pri" :class="{ checked: true, disabled: ${mod.builtin} }"
+      data-hover="tap" data-hit="click"
+      x-text="${mod.name.toUpperCase()}"
+    ></h1>
+    <div class="button_tr_h" x-setup="${mod.authors}.forEach(a => $el.append(${ModAuthor}(a)))"></div>
+    <p x-text="${mod.description}||''"></p>
   </div>`;
 
-export default define({
-  name: "core",
+const SettingsMenu = () =>
+  html`<div
+    class="right_scroller ns"
+    data-menuview="config_scarlet"
+    x-setup="scarlet.mods.forEach(m => $el.append(${ModSettings}(m)))"
+  >
+    <div class="scroller_block">
+      <h1 x-text='"SCARLET " + scarlet.version'></h1>
+    </div>
+  </div>`;
+
+const SettingsButton = () =>
+  html`<div
+    class="scroller_item scroller_item_config has_description ns rg_target_pri"
+    data-hover="hover" data-hit="hit2"
+    @click='${() => core.switchMenu("config_scarlet")}'
+  >
+    <h1>SCARLET</h1>
+    <p>configure SCARLET</p>
+  </div>`;
+
+const core = define({
+  name: "scarlet/core",
+  authors: [devs.rini],
+  description: "SCARLET's core functionality.",
   patches: [
-    patch(
+    replace(
       re`config_account:{back:"config",header:"CONFIG / ACCOUNT"`,
-      `config_scarlet:{back:"config",header:"CONFIG / SCARLET",footer:"configure SCARLET and it's mods!"},$&`,
+      `config_scarlet:{back:"config",header:"CONFIG / SCARLET",footer:"configure SCARLET and its mods!"},$&`,
+    ),
+    replace(
+      re`config_account:{\(starter:"f!.rg_target_pri",\.\*\?\)},`,
+      "config_scarlet:{$1},$&",
     ),
 
-    // don't bother osk with our bugs :3
-    patch(re`window.XDBG_COMMITLOG = () => {`, "$&return;"),
-    patch(re`(?g)window.console.\i =`, ""),
+    // don't bother osk with our bugs!
+    replace(re`window.XDBG_COMMITLOG=()=>{`, "$&return;"),
+    replace(re`(?g)window.console.\i=`, ""),
 
-    patch(re`\i||window.IS_ELECTRON&&"never"!==\i.electron.loginskip`, "true"),
+    replace(re`\i||window.IS_ELECTRON&&"never"!==\i.electron.loginskip`, "true"),
+    replace(re`loadProvider:async function(){`, "$&return;"),
 
-    patch(re`function \(\i\)(\i,\i){(\i[\i].onexit||`, "$self.switchMenu=$1;$&"),
+    replace(re`function \(\i\)(\i,\i){(\i[\i].onexit||`, "$self.switchMenu=$1;$&"),
   ],
   start() {
-    before("#config_account")`<div
-      data-hover="hover" data-hit="hit2"
-      class="scroller_item scroller_item_config has_description ns rg_target_pri"
-      @click='${() => this.switchMenu("config_scarlet")}'
-    >
-      <h1>SCARLET</h1>
-      <p>configure SCARLET</p>
-    </div>`;
-
-    append("#menus")`<div class="right_scroller ns" data-menuview="config_scarlet" x-data="{
-      setup() {
-        scarlet.mods.forEach(m => $root.append(Mod(m)));
-      },
-      Mod: ${ModSettings},
-    }">
-      <div class="scroller_block">
-        <h1 x-text='"SCARLET " + scarlet.version'></h1>
-      </div>
-    </div>`;
+    query("#config_account")?.before(SettingsButton());
+    query("#menus")?.prepend(SettingsMenu());
   },
+
   switchMenu(_target: string) {},
 });
+
+export default core;

@@ -8,14 +8,13 @@
     "build": "tsx build"
   },
   "dependencies": {
-    "anguishjs": "link:../anguish"
+    "anguishjs": "^0.4.8"
   },
   "devDependencies": {
     "@types/node": "^20.11.30",
     "@types/uglify-js": "^3.17.5",
     "esbuild": "^0.20.2",
     "tsx": "^4.11.0",
-    "uglify-js": "^3.17.4",
-    "unplugin-auto-import": "^0.17.6"
+    "uglify-js": "^3.17.4"
   }
 }

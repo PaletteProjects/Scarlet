@@ -6,14 +6,16 @@
  */
 
 import core from "mods/core";
+import { devs, html, Mod, query, re, replace } from "scarlet";
 
 const mods: Mod[] = [core];
+mods.forEach(m => m.builtin = true);
 
 declare const VERSION: string;
 
 window.scarlet = {
   version: VERSION,
-  loader: { after, before, append, prepend, query, html, patch, re },
+  loader: { query, html, replace, re, devs },
   mods,
 };
 

@@ -4,8 +4,6 @@
     "baseUrl": "./src",
     "moduleResolution": "bundler",
     "noEmit": true,
-    "jsx": "preserve",
-    "jsxImportSource": "solid-js",
     "target": "esnext"
   }
 }

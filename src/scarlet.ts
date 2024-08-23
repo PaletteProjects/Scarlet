@@ -43,7 +43,7 @@ interface ModDefinition {
 }
 
 export interface Mod extends ModDefinition {
-  builtin?: boolean;
+  required: boolean;
 }
 
 export const define = <T extends ModDefinition>(m: T) => m as Mod & T;

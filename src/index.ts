@@ -6,26 +6,28 @@
  */
 
 import core from "mods/core";
-import { devs, html, Mod, query, re, replace } from "scarlet";
+import { Mod } from "scarlet";
 
 const mods: Mod[] = [core];
-mods.forEach(m => m.builtin = true);
+const consoleStyle = ["color:lightskyblue", "color:currentColor;font-weight:400"];
 
-declare const VERSION: string;
 
 window.scarlet = {
   version: VERSION,
-  loader: { query, html, replace, re, devs },
   mods,
 };
+
+console.log(
+  `%cScarlet > %cLoading ${VERSION}! ${mods.length} mods installed`,
+  ...consoleStyle,
+);
 
 const eval_ = window.eval;
 window.eval = (src) => {
   mods.forEach((mod, id) => {
     console.group(
       `%cScarlet > %cApplying patches from ${mod.name}`,
-      "color:lightskyblue",
-      "color:currentColor;font-weight:400",
+      ...consoleStyle,
     );
 
     mod.patches?.forEach(fn => src = fn(src, id));
@@ -36,3 +38,5 @@ window.eval = (src) => {
 
   (window.eval = eval_)(src + "\n//# sourceURL=js/tetrio.js");
 };
+
+declare const VERSION: string;

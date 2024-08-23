@@ -8,7 +8,7 @@ const watch = process.argv.includes("--watch") || process.argv.includes("-w");
 const gitHash = execSync("git rev-parse --short HEAD", { encoding: "utf8" }).trim();
 const version = `${process.env.npm_package_version!}+git.${gitHash}`;
 
-const userscript = (meta: any) =>
+const mkUserscript = (meta: any) =>
   [
     "// ==UserScript==",
     ...Object.entries(meta).map(([k, v]) => `// @${k.padEnd(14)}  ${v}`),
@@ -17,10 +17,15 @@ const userscript = (meta: any) =>
   ]
     .join("\n");
 
+const userscriptMeta = mkUserscript({
+  "name": "Scarlet",
+  "match": "*://tetr.io/",
+  "run-at": "document-start",
+});
+
 const options: BuildOptions = {
   entryPoints: ["src/index.ts"],
   bundle: true,
-  minify: !watch,
   define: {
     VERSION: JSON.stringify(version),
   },
@@ -49,19 +54,17 @@ const options: BuildOptions = {
 };
 
 const targets = <BuildOptions[]> [
-  {
-    outfile: "dist/Scarlet.js",
-  },
+  { outfile: "dist/index.js" },
+  { outfile: "dist/index.min.js", minify: true },
   {
     outfile: "dist/Scarlet.user.js",
-    banner: {
-      js: userscript({
-        "name": "Scarlet",
-        "match": "*://tetr.io/",
-        "run-at": "document-start",
-      }),
-    },
+    banner: { js: userscriptMeta },
   },
+  {
+    outfile: "dist/Scarlet.min.user.js",
+    banner: { js: userscriptMeta },
+    minify: true,
+  }
 ];
 
 targets.map(t => ({ ...options, ...t }))

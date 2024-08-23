@@ -21,7 +21,7 @@ const ModAuthor = (author: Author) => {
 const ModSettings = (mod: Mod) =>
   html`<div class="scroller_block">
     <h1
-      class="checkbox rg_target_pri" :class="{ checked: true, disabled: ${mod.builtin} }"
+      class="checkbox rg_target_pri" :class="{ checked: true, disabled: ${mod.required} }"
       data-hover="tap" data-hit="click"
       x-text="${mod.name.toUpperCase()}"
     ></h1>
@@ -54,6 +54,7 @@ const core = define({
   name: "scarlet/core",
   authors: [devs.rini],
   description: "SCARLET's core functionality.",
+  required: true,
   patches: [
     replace(
       re`config_account:{back:"config",header:"CONFIG / ACCOUNT"`,

@@ -67,7 +67,7 @@ const core = define({
 
     // don't bother osk with our bugs!
     replace(re`window.XDBG_COMMITLOG=()=>{`, "$&return;"),
-    replace(re`(?g)window.console.\i=`, ""),
+    // replace(re`(?g)window.console.\i=`, ""), removed?
 
     replace(re`\i||window.IS_ELECTRON&&"never"!==\i.electron.loginskip`, "true"),
     replace(re`loadProvider:async function(){`, "$&return;"),

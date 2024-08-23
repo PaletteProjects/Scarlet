@@ -22,8 +22,7 @@ console.log(
   ...consoleStyle,
 );
 
-const eval_ = window.eval;
-window.eval = (src) => {
+const applyPatches = (src: string) => {
   mods.forEach((mod, id) => {
     console.group(
       `%cScarlet > %cApplying patches from ${mod.name}`,
@@ -36,7 +35,22 @@ window.eval = (src) => {
     console.groupEnd();
   });
 
-  (window.eval = eval_)(src + "\n//# sourceURL=js/tetrio.js");
+  return src;
+};
+
+const createObject = URL.createObjectURL;
+URL.createObjectURL = (blob) => {
+  if (blob instanceof Blob && blob.type === "text/javascript") {
+    blob.text().then(src => {
+      const script = document.createElement("script");
+      script.type = "text/javascript";
+      script.text = applyPatches(src);
+      document.head.append(script);
+    });
+
+    return createObject(new Blob([], { type: blob.type }));
+  }
+  return createObject(blob);
 };
 
 declare const VERSION: string;

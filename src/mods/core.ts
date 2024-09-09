@@ -74,6 +74,8 @@ const core = define({
 
     replace(re`function \(\i\)(\i,\i){(\i[\i].onexit||`, "$self.switchMenu=$1;$&"),
     replace(re`function \(\i\)(\i){\.\{1,96},\i.classList.add("tetra_modal")`, "$self.openProfile=$1;$&"),
+
+    src => src + "\n//# sourceURL=tetrio.js",
   ],
   start() {
     query("#config_account")?.before(SettingsButton());
@@ -83,5 +85,13 @@ const core = define({
   switchMenu(_target: string) {},
   openProfile(_user: { userID: string } | { username: string }) {},
 });
+
+const functionCtor = Function.prototype.constructor;
+Function.prototype.constructor = function(...args: any[]) {
+  if (args.at(-1).includes("debugger")) {
+    return () => "osk is very mean";
+  }
+  return functionCtor.apply(Function.prototype, ...args);
+};
 
 export default core;

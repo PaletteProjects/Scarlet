@@ -45,5 +45,6 @@ experience, *not* promoting unfair play
 [join] [join] [join] [join] [join] [join] [join] [join] [join] [join] [join] [join] [join] [join] [join] [join]
 [join] [join] [join] [join] [join] [join] [join] [join] [join] [join] [join] [join] [join] [join] [join] [join]
 [join] [join] [join] [join] [join] [join] [join] [join] [join] [join] [join] [join] [join] [join] [join] [join]
+[join] [join] [join] [join]
 
 [join]: https://discord.gg/z8BdAERNEP

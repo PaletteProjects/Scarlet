@@ -12,7 +12,7 @@ const mods: Mod[] = [core];
 const consoleStyle = ["color:lightskyblue", "color:currentColor;font-weight:400"];
 
 
-window.scarlet = {
+globalThis.scarlet = {
   version: VERSION,
   mods,
 };
@@ -48,7 +48,7 @@ URL.createObjectURL = (blob) => {
       document.head.append(script);
     });
 
-    return createObject(new Blob([], { type: blob.type }));
+    return (URL.createObjectURL = createObject)(new Blob([], { type: blob.type }));
   }
   return createObject(blob);
 };

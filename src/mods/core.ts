@@ -26,7 +26,7 @@ const ModSettings = (mod: Mod) =>
       x-text="${mod.name.toUpperCase()}"
     ></h1>
     <div class="button_tr_h" x-setup="${mod.authors}.forEach(a => $el.append(${ModAuthor}(a)))"></div>
-    <p x-text="${mod.description}||''"></p>
+    <p x-text="${mod.description || ""}"></p>
   </div>`;
 
 const SettingsMenu = () =>

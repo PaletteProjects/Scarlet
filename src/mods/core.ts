@@ -31,8 +31,7 @@ const ModSettings = (mod: Mod) =>
 
 const SettingsMenu = () =>
   html`<div
-    class="right_scroller ns"
-    data-menuview="config_scarlet"
+    class="right_scroller ns" data-menuview="config_scarlet"
     x-setup="scarlet.mods.forEach(m => $el.append(${ModSettings}(m)))"
   >
     <div class="scroller_block">
@@ -56,6 +55,11 @@ const core = define({
   description: "SCARLET's core functionality.",
   required: true,
   patches: [
+    // don't bother osk with our bugs!
+    replace(re`window.XDBG_COMMITLOG=()=>{`, "$&return;"),
+    // replace(re`(?g)window.console.\i=`, ""), removed?
+
+    // patch menus
     replace(
       re`config_account:{back:"config",header:"CONFIG / ACCOUNT"`,
       `config_scarlet:{back:"config",header:"CONFIG / SCARLET",footer:"configure SCARLET and its mods!"},$&`,
@@ -65,12 +69,12 @@ const core = define({
       "config_scarlet:{$1},$&",
     ),
 
-    // don't bother osk with our bugs!
-    replace(re`window.XDBG_COMMITLOG=()=>{`, "$&return;"),
-    // replace(re`(?g)window.console.\i=`, ""), removed?
-
     replace(re`\i||window.IS_ELECTRON&&"never"!==\i.electron.loginskip`, "true"),
     replace(re`loadProvider:async function(){`, "$&return;"),
+    replace(
+      re`\(\i("multi_join")\).type=\(\i.video.hideroomids\)?"password":"text"`,
+      "$1.style.webkitTextSecurity=$2?'disc':''",
+    ),
 
     replace(re`function \(\i\)(\i,\i){(\i[\i].onexit||`, "$self.switchMenu=$1;$&"),
     replace(re`function \(\i\)(\i){\.\{1,96},\i.classList.add("tetra_modal")`, "$self.openProfile=$1;$&"),
@@ -87,7 +91,7 @@ const core = define({
 });
 
 const functionCtor = Function.prototype.constructor;
-Function.prototype.constructor = function(...args: any[]) {
+Function.prototype.constructor = (...args: any[]) => {
   if (args.at(-1).includes("debugger")) {
     return () => "osk is very mean";
   }

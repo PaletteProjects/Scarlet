@@ -5,17 +5,11 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import core from "mods/core";
-import { Mod } from "scarlet";
+import { mods } from "./mods";
 
-const mods: Mod[] = [core];
 const consoleStyle = ["color:lightskyblue", "color:currentColor;font-weight:400"];
 
-
-globalThis.scarlet = {
-  version: VERSION,
-  mods,
-};
+(window as any).scarlet = { version: VERSION, mods };
 
 console.log(
   `%cScarlet > %cLoading ${VERSION}! ${mods.length} mods installed`,

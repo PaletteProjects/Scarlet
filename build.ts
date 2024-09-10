@@ -4,11 +4,12 @@ import { readFile, writeFile } from "fs/promises";
 import { minify, MinifyOptions } from "uglify-js";
 
 const watch = process.argv.includes("--watch") || process.argv.includes("-w");
+const includeExtra = process.argv.includes("--extra");
 
 const gitHash = execSync("git rev-parse --short HEAD", { encoding: "utf8" }).trim();
 const version = `${process.env.npm_package_version!}+git.${gitHash}`;
 
-const mkUserscript = (meta: any) =>
+const userscriptHeader = (meta: any) =>
   [
     "// ==UserScript==",
     ...Object.entries(meta).map(([k, v]) => `// @${k.padEnd(14)}  ${v}`),
@@ -17,32 +18,29 @@ const mkUserscript = (meta: any) =>
   ]
     .join("\n");
 
-const userscriptMeta = mkUserscript({
-  "name": "Scarlet",
-  "match": "*://tetr.io/",
-  "run-at": "document-start",
-});
-
 const options: BuildOptions = {
   entryPoints: ["src/index.ts"],
   bundle: true,
+  minifySyntax: true,
+  minifyWhitespace: true,
+  minifyIdentifiers: false,
   define: {
     VERSION: JSON.stringify(version),
+    INCLUDE_EXTRA: JSON.stringify(includeExtra),
   },
   logLevel: "info",
   plugins: [
     {
       name: "uglify",
       setup(build) {
-        if (watch) return;
-
         const path = build.initialOptions.outfile!;
         const preamble = build.initialOptions.banner?.js;
         const options: MinifyOptions = {
-          output: { preamble },
+          output: { preamble, beautify: true, },
           compress: {
             passes: 8,
           },
+          mangle: false,
         };
 
         build.onEnd(async () => {
@@ -53,19 +51,24 @@ const options: BuildOptions = {
   ],
 };
 
-const targets = <BuildOptions[]> [
-  { outfile: "dist/index.js" },
-  { outfile: "dist/index.min.js", minify: true },
-  {
-    outfile: "dist/Scarlet.user.js",
-    banner: { js: userscriptMeta },
+const userscript = <BuildOptions> {
+  ...options,
+  banner: {
+    js: userscriptHeader({
+      "name": "Scarlet",
+      "match": "*://tetr.io/",
+      "run-at": "document-start",
+    }),
   },
-  {
-    outfile: "dist/Scarlet.min.user.js",
-    banner: { js: userscriptMeta },
-    minify: true,
-  }
+  define: {
+    ...options.define,
+    window: "unsafeWindow",
+  },
+};
+
+const targets = <BuildOptions[]> [
+  { ...options, outfile: "dist/index.js" },
+  { ...userscript, outfile: "dist/Scarlet.user.js" },
 ];
 
-targets.map(t => ({ ...options, ...t }))
-  .forEach(watch ? t => context(t).then(ctx => ctx.watch()) : build);
+targets.forEach(watch ? async target => (await context(target)).watch() : build);

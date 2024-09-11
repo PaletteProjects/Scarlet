@@ -1,3 +1,10 @@
+/*
+ * Scarlet, a TETR.IO client mod
+ *
+ * Copyright (c) 2024 rini
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import { execSync } from "child_process";
 import { build, BuildOptions, context } from "esbuild";
 import { readFile, writeFile } from "fs/promises";
@@ -36,7 +43,7 @@ const options: BuildOptions = {
         const path = build.initialOptions.outfile!;
         const preamble = build.initialOptions.banner?.js;
         const options: MinifyOptions = {
-          output: { preamble, beautify: true, },
+          output: { preamble, beautify: true },
           compress: {
             passes: 8,
           },

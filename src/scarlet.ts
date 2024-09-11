@@ -1,3 +1,10 @@
+/*
+ * Scarlet, a TETR.IO client mod
+ *
+ * Copyright (c) 2024 rini
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import { html } from "anguishjs";
 
 export const re = (template: TemplateStringsArray) => {
@@ -46,7 +53,7 @@ export interface Mod extends ModDefinition {
   required: boolean;
 }
 
-export const define = <T extends ModDefinition>(m: T) => m as Mod & T;
+export const define = <T extends ModDefinition>(m: T) => m;
 
 // when contributing plugins, please add yourself here!
 // if you wish to link your account, get the id by opening your full profile and looking below your avatar
